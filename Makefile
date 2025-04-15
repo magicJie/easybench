@@ -83,7 +83,7 @@ test-net-server:
 # 网络测试
 test-net:
 	$(OCI) run --rm --name $(IMAGE_NAME) --network=host $(IMAGE_FULL_NAME) \
-		iperf3 -P 8 -i 5 -5 60 -c $(SERVER)
+		iperf3 -P 8 -i 5 -t 60 -c $(SERVER)
 # 自定义测试
 test:
 	$(OCI) run --rm --name $(IMAGE_NAME) $(IMAGE_FULL_NAME) \
