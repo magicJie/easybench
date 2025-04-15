@@ -71,11 +71,11 @@ test-fileio:
 # 线程测试
 test-threads:
 	$(OCI) run --rm --name $(IMAGE_NAME) $(IMAGE_FULL_NAME) \
-		sysbench threads --threads=8 --thread-yield-count=1000000 run
+		sysbench threads --threads=8 --thread-yields=1000 --thread-locks=8 run
 # 互斥测试
 test-mutex:
 	$(OCI) run --rm --name $(IMAGE_NAME) $(IMAGE_FULL_NAME) \
-		sysbench mutex --mutex-type=spinlock run
+		sysbench mutex --threads=8 --mutex-num=4096 --mutex-locks=50000 --mutex-loops=10000 run
 # 网络测试（服务端），为了避免网络损失，使用host网络
 test-net-server:
 	$(OCI) run --rm --name $(IMAGE_NAME)-server --network=host $(IMAGE_FULL_NAME) \
@@ -108,5 +108,8 @@ save:
 # 从文件加载镜像
 .PHONY: load
 load:
-	unzip out/$(IMAGE_NAME).zip out/$(IMAGE_NAME).tar
+	unzip out/$(IMAGE_NAME).zip out/$(IMAGE_NAME).tar || true
 	$(OCI) image load -i out/$(IMAGE_NAME).tar
+
+release: save
+	zip -7 out/$(IMAGE_NAME)_$(IMAGE_TAG).zip ./* -x "out/*.zip"
